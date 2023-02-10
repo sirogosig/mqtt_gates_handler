@@ -1,0 +1,14 @@
+[Unit]
+Description=Python program to handle gates
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/usr/bin/python /home/pi/Desktop/mqtt_gates_handler.py
+
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+

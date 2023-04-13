@@ -40,17 +40,16 @@ def messageFunction(client, userdata, message):
 		command+='\r\n'
 		arduino.write(command.encode())
 		publish_topic=topic+"/resp"
-	
-	
 
-ourClient = mqtt.Client("makerio_mqtt") # Create a MQTT client object
-ourClient.connect("localhost", 1883) # Connect to the test MQTT broker
-ourClient.subscribe("+/gates/#") # Subscribe to topics concerning gates
-ourClient.on_message = messageFunction # Attach the messageFunction to subscription
-ourClient.loop_start() # Start the MQTT client
 
 # Main program loop
 if __name__ == '__main__':
+	ourClient = mqtt.Client("makerio_mqtt") # Create a MQTT client object
+	ourClient.connect("localhost", 1883) # Connect to the test MQTT broker
+	ourClient.subscribe("+/gates/#") # Subscribe to topics concerning gates
+	ourClient.on_message = messageFunction # Attach the messageFunction to subscription
+	ourClient.loop_start() # Start the MQTT client
+
 	print('Running. Press CTRL-C to exit.')
 	with serial.Serial("/dev/ttyACM0", 9600, timeout=5) as arduino:
 		time.sleep(0.5) #wait for serial to open

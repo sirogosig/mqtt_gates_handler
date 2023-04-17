@@ -34,12 +34,13 @@ def _message_function(client, userdata, message):
 	else:
 		ourClient.publish("alert/gates","Command sent to wrong topic: "+topic,2)
 
-
 # Main program loop
 if __name__ == '__main__':
 	ourClient = mqtt.Client("python_script") # Create a MQTT client object
 	ourClient.connect("localhost", 1883) # Connect to the test MQTT broker
-	ourClient.subscribe("+/gates/#") # Subscribe to topics concerning gates
+	ourClient.subscribe("cmd/gates/#") # Subscribe to topics concerning gates
+	ourClient.subscribe("query/gates/#")
+	print(ourClient.unsubscribe("alert/gates/#")[0]) # Unsubscribe from alert topic
 	ourClient.on_message = _message_function # Attach the messageFunction to subscription
 	ourClient.loop_start() # Start the MQTT client
 

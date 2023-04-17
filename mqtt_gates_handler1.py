@@ -1,53 +1,46 @@
-import paho.mqtt.client as mqtt # Import the MQTT library
 import time # The time library is useful for delays
 import serial
+import argparse
+
+import paho.mqtt.client as mqtt # Import the MQTT library
 
 publish_topic = "alert/gates"
 
-def insert_string(list_str,string,position):
+def _insert_string(list_str,string,position):
 	return list_str[:position] + [string] + list_str[position:]
 
+def gates_parser():
+    ''' construct argparse object for gates control '''
+    parser = argparse.ArgumentParser()
+    parser.add_argument('')
+
+
 # Our "on message" event
-def messageFunction(client, userdata, message):
+def _message_function(client, userdata, message):
 	global publish_topic
 	topic = str(message.topic)
 	message = str(message.payload.decode("utf-8"))
 	topic_split=topic.split('/')
 
-	if (topic_split[0]=="cmd") and (len(topic_split)== 4):
-		#We have a command message with ID
-		message_split=message.split(' ')
-		if topic_split[2]=="servo0":
-			command=insert_string(message_split,"0",1)
-		if topic_split[2]=="servo1":
-			command=insert_string(message_split,"1",1)
-		if topic_split[2]=="servo2":
-			command=insert_string(message_split,"2",1)
-		command=' '.join(command)
-		command+='\r\n'
-		arduino.write(command.encode())
-		publish_topic=topic+"/resp"
-	elif (topic_split[0]=="query") and (len(topic_split)== 4):
-		#We have a data query with ID
-		message_split=message.split(' ')
-		if topic_split[2]=="servo0":
-			command=insert_string(message_split,"0",1)
-		if topic_split[2]=="servo1":
-			command=insert_string(message_split,"1",1)
-		if topic_split[2]=="servo2":
-			command=insert_string(message_split,"2",1)
-		command=' '.join(command)
-		command+='\r\n'
-		arduino.write(command.encode())
-		publish_topic=topic+"/resp"
+	if len(topic_split)== 3:
+		#We have an ID number
+		if (topic_split[0]=="cmd" or topic_split[0]=="query"):
+			#We have a command or query message with ID
+			message+='\r\n'
+			arduino.write(message.encode())
+			publish_topic=topic+"/resp"
+		else:
+			ourClient.publish("alert/gates","Command sent to wrong topic: "+topic_split[0],2)
+	else:
+		ourClient.publish("alert/gates","Command sent to wrong topic: "+topic,2)
 
 
 # Main program loop
 if __name__ == '__main__':
-	ourClient = mqtt.Client("makerio_mqtt") # Create a MQTT client object
+	ourClient = mqtt.Client("python_script") # Create a MQTT client object
 	ourClient.connect("localhost", 1883) # Connect to the test MQTT broker
 	ourClient.subscribe("+/gates/#") # Subscribe to topics concerning gates
-	ourClient.on_message = messageFunction # Attach the messageFunction to subscription
+	ourClient.on_message = _message_function # Attach the messageFunction to subscription
 	ourClient.loop_start() # Start the MQTT client
 
 	print('Running. Press CTRL-C to exit.')

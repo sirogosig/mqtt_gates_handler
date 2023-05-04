@@ -19,15 +19,15 @@ def gates_parser():
 def _message_function(client, userdata, message):
 	global publish_topic
 	topic = str(message.topic)
-	message = str(message.payload.decode("utf-8"))
+	command = str(message.payload.decode("utf-8"))
 	topic_split=topic.split('/')
 
 
 	if (topic_split[0]=="cmd" or topic_split[0]=="query"): #To avoid looping due to bridge
 		if len(topic_split) == 3:
 			#We have an ID number
-			message+='\r\n'
-			arduino.write(message.encode())
+			command+='\r\n'
+			arduino.write(command.encode())
 			publish_topic=topic+"/resp"
 		else:
 			ourClient.publish("alert/gates","Command sent to wrong topic: "+topic_split[0],2)

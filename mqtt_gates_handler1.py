@@ -37,8 +37,8 @@ def _message_function(client, userdata, message):
 if __name__ == '__main__':
 	ourClient = mqtt.Client("python_script") # Create a MQTT client object
 	ourClient.connect("localhost", 1883) # Connect to the test MQTT broker
-	ourClient.subscribe("cmd/gates/#") # Subscribe to topics concerning gates
-	ourClient.subscribe("query/gates/#")
+	ourClient.subscribe("cmd/gates/+") # Subscribe to topics concerning gates
+	ourClient.subscribe("query/gates/+")
 	ourClient.on_message = _message_function # Attach the messageFunction to subscription
 	ourClient.loop_start() # Start the MQTT client
 

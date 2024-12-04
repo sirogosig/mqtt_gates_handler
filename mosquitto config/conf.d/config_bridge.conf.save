@@ -1,0 +1,14 @@
+connection hivemq
+address c48bed613fff4862aaef13aa90203724.s2.eu.hivemq.cloud:8883
+bridge_cafile /home/pi/Downloads/isrgrootx1.pem
+
+topic # out 2 "" ho/hive1/ 
+topic # in 2 "" ho/hive1/
+
+remote_username wp3broker
+remote_password wp3broker
+
+bridge_protocol_version mqttv311
+try_private false
+notifications false
+bridge_attempt_unsubscribe false
